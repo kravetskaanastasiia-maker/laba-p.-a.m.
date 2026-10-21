@@ -7,11 +7,15 @@ FILEPATH = "data/tasks.json"
 
 
 def load_tasks():
-    """Читає завдання з файлу. Якщо файлу немає — повертає порожній список."""
+    """Читає завдання з файлу. Якщо файлу немає або він пошкоджений — повертає порожній список."""
     if not os.path.exists(FILEPATH):
         return []
-    with open(FILEPATH, "r", encoding="utf-8") as file:
-        return json.load(file)
+    try:
+        with open(FILEPATH, "r", encoding="utf-8") as file:
+            return json.load(file)
+    except (json.JSONDecodeError, ValueError):
+        print("Помилка: файл JSON пошкоджений або порожній. Створюємо новий список.")
+        return []
 
 
 def save_tasks(tasks):
@@ -35,6 +39,7 @@ def check_number(number_text, tasks):
 
 def add_task(text):
     """Додає нове завдання."""
+    text = text.strip()  # Видаляємо зайві пробіли на початку та в кінці
     if text == "":
         print("Помилка: текст завдання не може бути порожнім.")
         return
@@ -66,6 +71,7 @@ def edit_task(number_text, new_text):
     number = check_number(number_text, tasks)
     if number is None:
         return
+    new_text = new_text.strip()  # Видаляємо зайві пробіли з нового тексту
     if new_text == "":
         print("Помилка: новий текст не може бути порожнім.")
         return
